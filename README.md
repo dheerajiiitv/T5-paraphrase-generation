@@ -9,10 +9,10 @@ You will able to create paraphrase using a technique call **Back Translate**. Yo
 
 ### Application
 
-![Paraphrase](aug1.gif)
-![Paraphrase](aug2.gif)
-![Paraphrase](ayg3.gif)
-![Paraphrase](aug4.gif)
+![Paraphrase](aug1.png)
+![Paraphrase](aug2.png)
+![Paraphrase](ayg3.png)
+![Paraphrase](aug4.png)
 
 
 ### Install
@@ -20,7 +20,7 @@ You will able to create paraphrase using a technique call **Back Translate**. Yo
 ```
 pip install -r requirements.txt
 ```
-2. replace ``` core_estimator_predictor.py``` in ``` your_env/lib/python3.6/site-packages/tensorflow/contrib/predictor ``` with the file in given folder
+2. replace ``` core_estimator_predictor.py``` in ``` your_env/lib/python3.6/site-packages/tensorflow/contrib/predictor ``` with the file (core_estimator_predictor.py) in repository.
 3. Download models
 ```wget https://storage.googleapis.com/uda_model/text/back_trans_checkpoints.zip```
 ```unzip back_trans_checkpoints.zip && rm back_trans_checkpoints.zip```
