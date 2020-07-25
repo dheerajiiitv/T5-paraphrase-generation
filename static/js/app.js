@@ -28,7 +28,9 @@ jQuery(document).ready(function () {
                 "num_sentences": slider_sentences.val(),
                 "max_len": $('#max_len').val(),
                 "top_p": $('#top_p').val(),
-                "early_stop": $('#early_stop').val()
+                "early_stop": $('#early_stop').val(),
+                "is_t5":$("#is_t5").prop("checked"),
+                "is_uda":$("#is_uda").prop("checked")
             }),
             beforeSend: function () {
                 $('.overlay').show()
@@ -37,8 +39,8 @@ jQuery(document).ready(function () {
                 $('.overlay').hide()
             }
         }).done(function (jsondata, textStatus, jqXHR) {
-            console.log(jsondata)
-            $('#text_t5').val(jsondata)
+            $('#text_t5').val(jsondata['t5']);
+            $("#text_uda").val(jsondata['uda']);
         }).fail(function (jsondata, textStatus, jqXHR) {
             console.log(jsondata)
         });

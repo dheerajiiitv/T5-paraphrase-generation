@@ -5,6 +5,35 @@ import numpy as np
 import torch
 from transformers import T5ForConditionalGeneration, T5Tokenizer
 import re
+import subprocess
+import time
+from translate_models import EnFren
+import tensorflow as tf
+import nltk.data
+flags = tf.flags
+FLAGS = flags.FLAGS
+
+# Additional flags in bin/t2t_trainer.py and utils/flags.py
+flags.DEFINE_string("checkpoint_path", None,
+                    "Path to the model checkpoint. Overrides output_dir.")
+flags.DEFINE_bool("keep_timestamp", False,
+                  "Set the mtime of the decoded file to the "
+                  "checkpoint_path+'.index' mtime.")
+flags.DEFINE_bool("decode_interactive", False,
+                  "Interactive local inference mode.")
+flags.DEFINE_integer("decode_shards", 1, "Number of decoding replicas.")
+flags.DEFINE_string("score_file", "", "File to score. Each line in the file "
+                    "must be in the format input \t target.")
+flags.DEFINE_bool("decode_in_memory", False, "Decode in memory.")
+flags.FLAGS.problem = "translate_enfr_wmt32k"
+flags.FLAGS.model = "transformer"
+flags.FLAGS.hparams_set =  "transformer_big"
+flags.FLAGS.hparams = "sampling_method=random,sampling_temp=0.7"
+flags.FLAGS.decode_hparams  = "beam_size=1,batch_size=16"
+flags.FLAGS.checkpoint_path = "/home/dheeraj/Desktop/DataAugmentation/T5-paraphrase-generation/back_translate/checkpoints/enfr/model.ckpt-500000"
+flags.FLAGS.output_dir =  "/tmp/t2t"
+flags.FLAGS.data_dir = "/home/dheeraj/Desktop/DataAugmentation/T5-paraphrase-generation/back_translate/checkpoints"
+
 
 def set_seed(seed):
     torch.manual_seed(seed)
@@ -18,9 +47,9 @@ model = T5ForConditionalGeneration.from_pretrained('ramsrigouthamg/t5_paraphrase
 tokenizer = T5Tokenizer.from_pretrained('t5-base')
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
-
 app = Flask(__name__)
-
+model_uda = EnFren()
+tokenizer_nltk = nltk.data.load('tokenizers/punkt/english.pickle')
 
 def _generate(sentence, num_sentences, max_len, top_p, early_stop):
     text = "paraphrase: " + sentence + " </s>"
@@ -46,6 +75,22 @@ def _generate(sentence, num_sentences, max_len, top_p, early_stop):
     return final_outputs
 
 
+def _generate_uda(query, samples):
+    # Need to define arguments -
+
+
+
+    if not model_uda.is_loaded():
+        model_uda.load()
+    output = []
+    for i in range(samples):
+        output.append(' '.join(model_uda.predict(query)))
+
+
+    return output
+
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -58,12 +103,24 @@ def get_paraphrase():
         num_sentences = int(request.json['num_sentences'])
         max_len = int(request.json['max_len'])
         top_p = float(request.json['top_p'])
+        is_t5 = bool(request.json['is_t5'])
+        is_uda =  bool(request.json['is_uda'])
         early_stop = int(request.json['early_stop'])
 
-        response = _generate(input_text, num_sentences, max_len, top_p, early_stop)
-        str_response = '\n'.join([r for r in response])
+        s = time.time()
+        if is_t5:
+            response = _generate(input_text, num_sentences, max_len, top_p, early_stop)
+            str_response = '\n'.join([r for r in response])
+        else:
+            str_response = ''
 
-        return app.response_class(response=json.dumps(str_response), status=200, mimetype='application/json')
+        if is_uda:
+            uda_response = _generate_uda(tokenizer_nltk.tokenize(input_text), num_sentences)
+            uda_response = '\n'.join([r.replace("<EOS>","") for r in uda_response])
+        else:
+            uda_response = ''
+
+        return app.response_class(response=json.dumps({"t5":str_response, "uda":uda_response}), status=200, mimetype='application/json')
     except Exception as error:
         err = str(error)
         print(err)
@@ -71,4 +128,15 @@ def get_paraphrase():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, port=8000, use_reloader=True)
+    app.run(host='0.0.0.0', debug=True, port=8001, use_reloader=True)
+
+    # model = EnFren()
+    #
+    # if not model.is_loaded():
+    #     model.load()
+    # s = time.time()
+    # for i in np.arange(100):
+    #     output = model.predict(query=["can you tell me more about the further interview rounds?"], noise=0.1)
+    #     print(output)
+    #
+    # print(time.time()- s)
