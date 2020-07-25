@@ -4,12 +4,15 @@ Simple application using T5 base model fine tuned in Quora Question Pairs to gen
 This repository is based on the work from [@ramsrigouthamg](https://github.com/ramsrigouthamg/Paraphrase-any-question-with-T5-Text-To-Text-Transfer-Transformer-) which explain very well how to fine tune the model.
 
 # Paraphrase generation using Google UDA.
-You will able to create paraphrase using a technique call ** Back Translate **. 
+You will able to create paraphrase using a technique call **Back Translate**. You can find more info about it here:-https://github.com/google-research/uda
 
 
 ### Application
 
-![Paraphrase](paraphrase.gif)
+![Paraphrase](aug1.gif)
+![Paraphrase](aug2.gif)
+![Paraphrase](ayg3.gif)
+![Paraphrase](aug4.gif)
 
 
 ### Install
