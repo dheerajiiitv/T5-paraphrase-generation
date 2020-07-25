@@ -49,7 +49,7 @@ class EnFren():
         FLAGS.problem = "translate_enfr_wmt32k_rev"
         self.problem = "translate_enfr_wmt32k_rev"
         self.problem_name = self.problem
-        FLAGS.checkpoint_path = "/home/dheeraj/Desktop/DataAugmentation/T5-paraphrase-generation/back_translate/checkpoints/fren/model.ckpt-500000"
+        FLAGS.checkpoint_path = os.path.join(os.getcwd(),"checkpoints/fren/model.ckpt-500000")
         run_config = t2t_trainer.create_run_config(self.hp)
         self.hp.model_dir = run_config.model_dir
         self.estimator = trainer_lib.create_estimator(

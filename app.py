@@ -12,7 +12,7 @@ import tensorflow as tf
 import nltk.data
 flags = tf.flags
 FLAGS = flags.FLAGS
-
+import os
 # Additional flags in bin/t2t_trainer.py and utils/flags.py
 flags.DEFINE_string("checkpoint_path", None,
                     "Path to the model checkpoint. Overrides output_dir.")
@@ -30,9 +30,9 @@ flags.FLAGS.model = "transformer"
 flags.FLAGS.hparams_set =  "transformer_big"
 flags.FLAGS.hparams = "sampling_method=random,sampling_temp=0.7"
 flags.FLAGS.decode_hparams  = "beam_size=1,batch_size=16"
-flags.FLAGS.checkpoint_path = "/home/dheeraj/Desktop/DataAugmentation/T5-paraphrase-generation/back_translate/checkpoints/enfr/model.ckpt-500000"
+flags.FLAGS.checkpoint_path = os.path.join(os.getcwd(),"checkpoints/enfr/model.ckpt-500000")
 flags.FLAGS.output_dir =  "/tmp/t2t"
-flags.FLAGS.data_dir = "/home/dheeraj/Desktop/DataAugmentation/T5-paraphrase-generation/back_translate/checkpoints"
+flags.FLAGS.data_dir = os.path.join(os.getcwd(),"checkpoints")
 
 
 def set_seed(seed):
@@ -128,15 +128,5 @@ def get_paraphrase():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, port=8001, use_reloader=True)
+    app.run(host='0.0.0.0', port=8001 )
 
-    # model = EnFren()
-    #
-    # if not model.is_loaded():
-    #     model.load()
-    # s = time.time()
-    # for i in np.arange(100):
-    #     output = model.predict(query=["can you tell me more about the further interview rounds?"], noise=0.1)
-    #     print(output)
-    #
-    # print(time.time()- s)
